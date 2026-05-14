@@ -184,7 +184,7 @@ export default function App() {
             onKeyDown={handleKeyDown}
             placeholder=""
             rows={1}
-            className="flex-1 bg-white border border-slate-100 text-slate-700 rounded-xl px-4 py-2.5 text-sm outline-none focus:outline-none resize-none transition-colors"
+            className="flex-1 bg-white border-0 text-slate-400 rounded-xl px-4 py-2.5 text-sm outline-none focus:outline-none resize-none"
             style={{ minHeight: "40px" }}
           />
         </form>
