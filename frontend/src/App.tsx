@@ -18,6 +18,10 @@ export default function App() {
   const messagesRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  useEffect(() => {
+    textareaRef.current?.focus();
+  }, []);
+
   // Force light mode so it blends into Jupyter
   useEffect(() => {
     document.documentElement.classList.remove("dark");
@@ -106,12 +110,6 @@ export default function App() {
       {/* Messages */}
       <div ref={messagesRef} className="flex-1 overflow-y-auto px-4 py-4">
         <div className="max-w-3xl mx-auto space-y-3">
-          {messages.length === 0 && (
-            <div className="text-center mt-16">
-              <p className="text-sm text-slate-400">Send a message to start</p>
-            </div>
-          )}
-
           {messages.map((msg) => (
             <div key={msg.id} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
               {msg.role !== "user" && (
@@ -154,7 +152,7 @@ export default function App() {
       </div>
 
       {/* Input */}
-      <div className="border-t border-slate-200 bg-white px-4 py-3">
+      <div className="bg-white px-4 py-3">
         <form onSubmit={handleSubmit} className="flex items-end gap-2 max-w-3xl mx-auto">
           {/* Copy last AI response */}
           <button
@@ -186,7 +184,7 @@ export default function App() {
             onKeyDown={handleKeyDown}
             placeholder=""
             rows={1}
-            className="flex-1 bg-white border border-slate-100 text-slate-800 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-slate-200 resize-none transition-colors"
+            className="flex-1 bg-white border border-slate-100 text-slate-700 rounded-xl px-4 py-2.5 text-sm outline-none focus:outline-none resize-none transition-colors"
             style={{ minHeight: "40px" }}
           />
         </form>
