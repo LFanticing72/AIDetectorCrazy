@@ -162,10 +162,10 @@ export default function App() {
             onClick={handleCopy}
             disabled={!lastAiMessage}
             title="Copy last AI response"
-            className={`flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-lg border transition-colors text-xs font-medium ${
+            className={`flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-lg border transition-colors ${
               copied
-                ? "border-emerald-400 text-emerald-600 bg-emerald-50"
-                : "border-slate-200 text-slate-400 hover:border-slate-400 hover:text-slate-600 disabled:opacity-30 disabled:cursor-not-allowed"
+                ? "border-emerald-300 text-emerald-500"
+                : "border-slate-100 text-slate-200 hover:border-slate-300 hover:text-slate-400 disabled:opacity-20 disabled:cursor-not-allowed"
             }`}
           >
             {copied ? (
@@ -184,9 +184,9 @@ export default function App() {
             value={input}
             onChange={handleTextareaChange}
             onKeyDown={handleKeyDown}
-            placeholder="Message... (Enter to send, Shift+Enter for new line)"
+            placeholder=""
             rows={1}
-            className="flex-1 bg-slate-50 border border-slate-200 text-slate-800 placeholder-slate-400 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-slate-400 resize-none transition-colors"
+            className="flex-1 bg-white border border-slate-100 text-slate-800 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-slate-200 resize-none transition-colors"
             style={{ minHeight: "40px" }}
           />
         </form>
