@@ -62,7 +62,7 @@ export default function App() {
     // Also post to parent for Jupyter iframe context
     window.parent.postMessage({ type: "cortex-copy", text: lastAiMessage }, "*");
     setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    setTimeout(() => setCopied(false), 500);
   };
 
   const sendText = async (text: string) => {
@@ -112,17 +112,12 @@ export default function App() {
         <div className="max-w-3xl mx-auto space-y-3">
           {messages.map((msg) => (
             <div key={msg.id} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-              {msg.role !== "user" && (
-                <div className="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 text-[10px] font-bold flex-shrink-0 mr-2 mt-0.5">
-                  AI
-                </div>
-              )}
-              <div className={`max-w-[78%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
+              <div className={`max-w-[78%] px-4 py-1.5 text-sm leading-relaxed ${
                 msg.role === "user"
-                  ? "bg-slate-100 text-slate-800 rounded-br-sm"
+                  ? "bg-slate-100 text-slate-800 rounded-2xl rounded-br-sm"
                   : msg.role === "error"
-                  ? "bg-red-50 text-red-600 border border-red-200 font-mono"
-                  : "bg-white border border-slate-200 text-slate-800 rounded-bl-sm shadow-sm"
+                  ? "bg-red-50 text-red-400 border border-red-100 rounded-2xl font-mono"
+                  : "text-slate-300"
               }`}>
                 <p className="whitespace-pre-wrap">{msg.content}</p>
               </div>
@@ -130,20 +125,15 @@ export default function App() {
           ))}
 
           {loading && (
-            <div className="flex justify-start">
-              <div className="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 text-[10px] font-bold flex-shrink-0 mr-2 mt-0.5">
-                AI
-              </div>
-              <div className="bg-white border border-slate-200 rounded-2xl rounded-bl-sm px-4 py-3 shadow-sm">
-                <div className="flex items-center gap-1">
-                  {[0, 150, 300].map((delay) => (
-                    <span
-                      key={delay}
-                      className="w-1.5 h-1.5 rounded-full bg-slate-300 animate-bounce"
-                      style={{ animationDelay: `${delay}ms` }}
-                    />
-                  ))}
-                </div>
+            <div className="flex justify-start px-4">
+              <div className="flex items-center gap-1 py-2">
+                {[0, 150, 300].map((delay) => (
+                  <span
+                    key={delay}
+                    className="w-1.5 h-1.5 rounded-full bg-slate-200 animate-bounce"
+                    style={{ animationDelay: `${delay}ms` }}
+                  />
+                ))}
               </div>
             </div>
           )}
@@ -162,7 +152,7 @@ export default function App() {
             title="Copy last AI response"
             className={`flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-lg border transition-colors ${
               copied
-                ? "border-emerald-300 text-emerald-500"
+                ? "border-emerald-200 text-emerald-300"
                 : "border-slate-100 text-slate-200 hover:border-slate-300 hover:text-slate-400 disabled:opacity-20 disabled:cursor-not-allowed"
             }`}
           >
