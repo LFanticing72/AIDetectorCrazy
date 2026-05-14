@@ -15,7 +15,7 @@ export default function App() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
-  const bottomRef = useRef<HTMLDivElement>(null);
+  const messagesRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Force light mode so it blends into Jupyter
@@ -23,8 +23,13 @@ export default function App() {
     document.documentElement.classList.remove("dark");
   }, []);
 
+  const scrollToBottom = () => {
+    const el = messagesRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  };
+
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    scrollToBottom();
   }, [messages, loading]);
 
   const addMessage = (msg: Omit<Message, "id">) =>
@@ -87,7 +92,7 @@ export default function App() {
   return (
     <div className="flex flex-col h-screen bg-white text-slate-800">
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-4 py-4">
+      <div ref={messagesRef} className="flex-1 overflow-y-auto px-4 py-4">
         <div className="max-w-3xl mx-auto space-y-3">
           {messages.length === 0 && (
             <div className="text-center mt-16">
@@ -133,7 +138,6 @@ export default function App() {
             </div>
           )}
 
-          <div ref={bottomRef} />
         </div>
       </div>
 
@@ -168,21 +172,11 @@ export default function App() {
             value={input}
             onChange={handleTextareaChange}
             onKeyDown={handleKeyDown}
-            placeholder="Send a message... (Shift+Enter for new line)"
+            placeholder="Message... (Enter to send, Shift+Enter for new line)"
             rows={1}
             className="flex-1 bg-slate-50 border border-slate-200 text-slate-800 placeholder-slate-400 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-slate-400 resize-none transition-colors"
             style={{ minHeight: "40px" }}
           />
-
-          <button
-            type="submit"
-            disabled={loading || !input.trim()}
-            className="flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-lg bg-slate-800 hover:bg-slate-700 text-white transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-              <path d="M3.478 2.405a.75.75 0 0 0-.926.94l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.405Z" />
-            </svg>
-          </button>
         </form>
       </div>
     </div>
