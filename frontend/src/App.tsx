@@ -34,10 +34,14 @@ export default function App() {
 
   const handleCopy = () => {
     if (!lastAiMessage) return;
-    navigator.clipboard.writeText(lastAiMessage).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
+    // Try native clipboard first (works when loaded directly)
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(lastAiMessage).catch(() => {});
+    }
+    // Also post to parent — works inside Jupyter iframes
+    window.parent.postMessage({ type: "cortex-copy", text: lastAiMessage }, "*");
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   const sendText = async (text: string) => {
