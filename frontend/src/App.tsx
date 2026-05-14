@@ -37,13 +37,25 @@ export default function App() {
 
   const lastAiMessage = [...messages].reverse().find((m) => m.role === "assistant")?.content ?? null;
 
+  const fallbackCopy = (text: string) => {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.cssText = "position:fixed;opacity:0;top:0;left:0";
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    try { document.execCommand("copy"); } catch { /* ignore */ }
+    document.body.removeChild(ta);
+  };
+
   const handleCopy = () => {
     if (!lastAiMessage) return;
-    // Try native clipboard first (works when loaded directly)
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(lastAiMessage).catch(() => {});
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(lastAiMessage).catch(() => fallbackCopy(lastAiMessage));
+    } else {
+      fallbackCopy(lastAiMessage);
     }
-    // Also post to parent — works inside Jupyter iframes
+    // Also post to parent for Jupyter iframe context
     window.parent.postMessage({ type: "cortex-copy", text: lastAiMessage }, "*");
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
