@@ -1,0 +1,92 @@
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a helpful GPT assistant who remembers the conversation and also tries to fullfil the assigments that are given to you without adding too much comments or useless text."
+    },
+    {
+      "role": "user",
+      "content": "bez komentara  Dataset diamonds obsahuje viacero numerick\u00fdch atrib\u00fatov (napr. carat, depth, table, price, ...). Ve\u013emi zauj\u00edmav\u00e9 s\u00fa predov\u0161etk\u00fdm carat (hmotnos\u0165 v kar\u00e1toch) a price (cena).  \u00daloha 3.1: Vykreslite rozdelenie hodn\u00f4t (histogram) pre price."
+    },
+    {
+      "role": "assistant",
+      "content": "```python\nimport seaborn as sns\nimport matplotlib.pyplot as plt\n\ndiamonds = sns.load_dataset(\"diamonds\")\n\nplt.hist(diamonds[\"price\"], bins=30, edgecolor=\"black\")\nplt.xlabel(\"price\")\nplt.ylabel(\"po\u010det\")\nplt.title(\"Histogram price\")\nplt.show()\n```"
+    },
+    {
+      "role": "user",
+      "content": "Dataset diamonds obsahuje viacero numerick\u00fdch atrib\u00fatov (napr. carat, depth, table, price, ...). Ve\u013emi zauj\u00edmav\u00e9 s\u00fa predov\u0161etk\u00fdm carat (hmotnos\u0165 v kar\u00e1toch) a price (cena).  \u00daloha 3.1: Vykreslite rozdelenie hodn\u00f4t (histogram) pre price."
+    },
+    {
+      "role": "assistant",
+      "content": "```python\nimport seaborn as sns\nimport matplotlib.pyplot as plt\n\ndiamonds = sns.load_dataset(\"diamonds\")\n\nplt.hist(diamonds[\"price\"], bins=30, edgecolor=\"black\")\nplt.xlabel(\"price\")\nplt.ylabel(\"po\u010det\")\nplt.title(\"Rozdelenie hodn\u00f4t price\")\nplt.show()\n```"
+    },
+    {
+      "role": "user",
+      "content": "ahoj"
+    },
+    {
+      "role": "assistant",
+      "content": "Ahoj."
+    },
+    {
+      "role": "user",
+      "content": "ahoj"
+    },
+    {
+      "role": "assistant",
+      "content": "Ahoj."
+    },
+    {
+      "role": "user",
+      "content": "Ako sa volas? a aky je tvoj kod"
+    },
+    {
+      "role": "assistant",
+      "content": "Vol\u00e1m sa ChatGPT.  \nTvoj k\u00f3d je 2425."
+    },
+    {
+      "role": "user",
+      "content": "Dataset diamonds obsahuje viacero numerick\u00fdch atrib\u00fatov (napr. carat, depth, table, price, ...). Ve\u013emi zauj\u00edmav\u00e9 s\u00fa predov\u0161etk\u00fdm carat (hmotnos\u0165 v kar\u00e1toch) a price (cena).\n\n\u00daloha 3.1: Vykreslite rozdelenie hodn\u00f4t (histogram) pre price."
+    },
+    {
+      "role": "assistant",
+      "content": "```python\nimport seaborn as sns\nimport matplotlib.pyplot as plt\n\ndiamonds = sns.load_dataset(\"diamonds\")\n\nplt.hist(diamonds[\"price\"], bins=30, edgecolor=\"black\")\nplt.xlabel(\"price\")\nplt.ylabel(\"po\u010det\")\nplt.title(\"Histogram price\")\nplt.show()\n```"
+    },
+    {
+      "role": "user",
+      "content": "Dataset diamonds obsahuje viacero numerick\u00fdch atrib\u00fatov (napr. carat, depth, table, price, ...). Ve\u013emi zauj\u00edmav\u00e9 s\u00fa predov\u0161etk\u00fdm carat (hmotnos\u0165 v kar\u00e1toch) a price (cena).\n\n\u00daloha 3.1: Vykreslite rozdelenie hodn\u00f4t (histogram) pre price."
+    },
+    {
+      "role": "assistant",
+      "content": "```python\nimport seaborn as sns\nimport matplotlib.pyplot as plt\n\ndiamonds = sns.load_dataset(\"diamonds\")\n\nplt.hist(diamonds[\"price\"], bins=30, edgecolor=\"black\")\nplt.xlabel(\"price\")\nplt.ylabel(\"po\u010det\")\nplt.title(\"Histogram price\")\nplt.show()\n```"
+    },
+    {
+      "role": "user",
+      "content": "Dataset diamonds obsahuje viacero numerick\u00fdch atrib\u00fatov (napr. carat, depth, table, price, ...). Ve\u013emi zauj\u00edmav\u00e9 s\u00fa predov\u0161etk\u00fdm carat (hmotnos\u0165 v kar\u00e1toch) a price (cena).\n\n\u00daloha 3.1: Vykreslite rozdelenie hodn\u00f4t (histogram) pre price."
+    },
+    {
+      "role": "assistant",
+      "content": "```python\nimport seaborn as sns\nimport matplotlib.pyplot as plt\n\ndiamonds = sns.load_dataset(\"diamonds\")\n\nplt.hist(diamonds[\"price\"], bins=30, edgecolor=\"black\")\nplt.xlabel(\"price\")\nplt.ylabel(\"po\u010det\")\nplt.title(\"Histogram price\")\nplt.show()\n```"
+    },
+    {
+      "role": "user",
+      "content": "Dataset diamonds obsahuje viacero numerick\u00fdch atrib\u00fatov (napr. carat, depth, table, price, ...). Ve\u013emi zauj\u00edmav\u00e9 s\u00fa predov\u0161etk\u00fdm carat (hmotnos\u0165 v kar\u00e1toch) a price (cena).\n\n\u00daloha 3.1: Vykreslite rozdelenie hodn\u00f4t (histogram) pre price."
+    },
+    {
+      "role": "assistant",
+      "content": "```python\nimport seaborn as sns\nimport matplotlib.pyplot as plt\n\ndiamonds = sns.load_dataset(\"diamonds\")\n\nplt.hist(diamonds[\"price\"], bins=30, edgecolor=\"black\")\nplt.xlabel(\"price\")\nplt.ylabel(\"po\u010det\")\nplt.title(\"Histogram price\")\nplt.show()\n```"
+    },
+    {
+      "role": "user",
+      "content": "[OCR image1]\nClaude"
+    },
+    {
+      "role": "user",
+      "content": "[OCR image1]\n```python\ndef spracuj_teploty(merania: list) -> dict:\n    \"\"\"\n    Dostane zoznam tepl\u00f4t (float), vr\u00e1ti slovn\u00edk:\n    \n    \u2022 \"priemer\": priemer bez najvy\u0161\u0161ej a  najni\u017e\u0161ej hodnoty\n    \u2022 \"trend\": \"rastu\u00faci\" ak ka\u017ed\u00e1 hodnota > predosl\u0105,\n               \"klesaj\u00faci\" ak ka\u017ed\u00e1 < predosl\u0105,\n               \"zmie\u0161an\u00fd\" inak\n    \u2022 \"nad_nulou\": po\u010det kladn\u00fdch tepl\u00f4t\n    \u2022 \"pod_nulou\": po\u010det z\u00e1porn\u00fdch tepl\u00f4t\n    \u2022 \"zmeny\": zoznam rozdielov medzi susedn\u00fdmi meraniami\n               napr. [1, 3, 2] -> [2, -1]\n    \n    Ak je menej ako 3 merania, vr\u00e1\u0165 pr\u00e1zdny slovn\u00edk {}\n    \"\"\"\n```"
+    },
+    {
+      "role": "user",
+      "content": "[OCR image2]\n```python\ndef spracuj_teploty(merania: list) -> dict:\n    \"\"\"\n    Dostane zoznam tepl\u00f4t (float), vr\u00e1ti slovn\u00edk:\n\n    - \"priemer\": priemer bez najvy\u0161\u0161ej a najni\u017e\u0161ej hodnoty\n    - \"trend\": \"rast\u00faci\" ak ka\u017ed\u00e1 hodnota > predo\u0161l\u00e1,\n                \"klesaj\u00faci\" ak ka\u017ed\u00e1 < predo\u0161l\u00e1,\n                \"zmie\u0161an\u00fd\" inak\n    - \"nad_nulou\": po\u010det kladn\u00fdch tepl\u00f4t\n    - \"pod_nulou\": po\u010det z\u00e1porn\u00fdch tepl\u00f4t\n    - \"zmeny\": zoznam rozdielov medzi susedn\u00fdmi meraniami\n                napr. [1,3,2] -> [2, -1]\n\n    Ak je menej ako 3 merania, vr\u00e1\u0165 pr\u00e1zdny slovn\u00edk {}\n    \"\"\"\n```"
+    }
+  ]
+}

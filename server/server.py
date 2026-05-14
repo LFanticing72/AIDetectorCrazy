@@ -14,7 +14,7 @@ CORS(app)
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-MODEL       = os.getenv("OPENAI_MODEL", "gpt-4o")
+MODEL       = os.getenv("OPENAI_MODEL", "gpt-5.4")
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 REPO        = os.getenv("GITHUB_REPO", "LFanticing72/helf")
 BRANCH      = os.getenv("GITHUB_BRANCH", "main")
@@ -49,11 +49,17 @@ def upload_to_github(content: str, github_path: str):
     return resp.status_code, resp.json()
 
 
+MAX_HISTORY = 20  # messages sent to API (excluding system prompt)
+
 def load_history() -> list:
     if not os.path.exists(CHAT_HISTORY):
         return []
     with open(CHAT_HISTORY, encoding="utf-8") as f:
-        return json.load(f).get("messages", [])
+        messages = json.load(f).get("messages", [])
+    # Always keep the system prompt, trim the rest to last MAX_HISTORY
+    system = [m for m in messages if m["role"] == "system"]
+    rest = [m for m in messages if m["role"] != "system"]
+    return system + rest[-MAX_HISTORY:]
 
 
 def save_history(messages: list):
