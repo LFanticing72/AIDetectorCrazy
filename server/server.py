@@ -1,11 +1,11 @@
 import os
-import json
 import base64
 import requests
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from openai import OpenAI
 from dotenv import load_dotenv
+from pymongo import MongoClient
 
 load_dotenv()
 
@@ -14,17 +14,45 @@ CORS(app)
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-MODEL       = os.getenv("OPENAI_MODEL", "gpt-5.4")
+MODEL        = os.getenv("OPENAI_MODEL", "gpt-5.4")
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
-REPO        = os.getenv("GITHUB_REPO", "LFanticing72/helf")
-BRANCH      = os.getenv("GITHUB_BRANCH", "main")
+REPO         = os.getenv("GITHUB_REPO", "LFanticing72/helf")
+BRANCH       = os.getenv("GITHUB_BRANCH", "main")
 
-CHAT_HISTORY = "conversation.json"
-COUNTER_FILE = "counter.txt"
-SYSTEM_PROMPT = "Perform well, do not overcomplicate things."
+SYSTEM_PROMPT = (
+    "You are a coding assistant. "
+    "NEVER add comments to code. No inline comments, no docstrings, no explanatory text before or after code blocks. "
+    "Output only raw code unless explicitly asked for explanation. "
+    "Do not say things like 'Here is the code' or 'This function does X'. "
+    "Just output the code directly."
+)
+MAX_HISTORY   = 20
+
+# ── MongoDB ───────────────────────────────────────────────────────────────────
+
+_mongo = MongoClient(os.getenv("MONGODB_URL"))
+_db    = _mongo[os.getenv("MONGODB_DB", "tumour_detector")]
+_col   = _db["chat_history"]
+
+CONV_ID = "main"  # single conversation document
+
+def load_history() -> list:
+    doc = _col.find_one({"_id": CONV_ID})
+    return doc["messages"] if doc else []
+
+def save_history(messages: list):
+    _col.replace_one({"_id": CONV_ID}, {"_id": CONV_ID, "messages": messages}, upsert=True)
+
+def api_messages(full: list) -> list:
+    system = [m for m in full if m["role"] == "system"]
+    rest   = [m for m in full if m["role"] != "system"]
+    return system + rest[-MAX_HISTORY:]
 
 
-# ── helpers ──────────────────────────────────────────────────────────────────
+# ── GitHub ────────────────────────────────────────────────────────────────────
+
+BASE_DIR     = os.path.dirname(os.path.abspath(__file__))
+COUNTER_FILE = os.path.join(BASE_DIR, "counter.txt")
 
 def get_next_number() -> int:
     if not os.path.exists(COUNTER_FILE):
@@ -37,10 +65,9 @@ def get_next_number() -> int:
         f.write(str(num + 1))
     return num
 
-
 def upload_to_github(content: str, github_path: str):
     encoded = base64.b64encode(content.encode()).decode()
-    url = f"https://api.github.com/repos/{REPO}/contents/{github_path}"
+    url  = f"https://api.github.com/repos/{REPO}/contents/{github_path}"
     resp = requests.put(
         url,
         json={"message": f"Add {github_path}", "content": encoded, "branch": BRANCH},
@@ -49,40 +76,24 @@ def upload_to_github(content: str, github_path: str):
     return resp.status_code, resp.json()
 
 
-MAX_HISTORY = 20  # messages sent to API (excluding system prompt)
-
-def load_history() -> list:
-    if not os.path.exists(CHAT_HISTORY):
-        return []
-    with open(CHAT_HISTORY, encoding="utf-8") as f:
-        messages = json.load(f).get("messages", [])
-    # Always keep the system prompt, trim the rest to last MAX_HISTORY
-    system = [m for m in messages if m["role"] == "system"]
-    rest = [m for m in messages if m["role"] != "system"]
-    return system + rest[-MAX_HISTORY:]
-
-
-def save_history(messages: list):
-    with open(CHAT_HISTORY, "w", encoding="utf-8") as f:
-        json.dump({"messages": messages}, f, indent=2)
-
-
-# ── routes ───────────────────────────────────────────────────────────────────
+# ── routes ────────────────────────────────────────────────────────────────────
 
 @app.route("/chat", methods=["POST"])
 def chat():
     prompt = request.get_json().get("prompt", "")
 
-    messages = load_history()
-    if not messages:
-        messages.append({"role": "system", "content": SYSTEM_PROMPT})
-    messages.append({"role": "user", "content": prompt})
+    full = load_history()
+    if not full:
+        full.append({"role": "system", "content": SYSTEM_PROMPT})
 
-    response = client.chat.completions.create(model=MODEL, messages=messages)
-    reply = response.choices[0].message.content
+    prompt_with_reminder = prompt + "\n\n[No comments in code. No explanatory text. Raw code only.]"
+    to_send  = api_messages(full) + [{"role": "user", "content": prompt_with_reminder}]
+    response = client.chat.completions.create(model=MODEL, messages=to_send)
+    reply    = response.choices[0].message.content
 
-    messages.append({"role": "assistant", "content": reply})
-    save_history(messages)
+    full.append({"role": "user",      "content": prompt})
+    full.append({"role": "assistant", "content": reply})
+    save_history(full)
 
     return jsonify({"response": reply})
 
@@ -92,42 +103,36 @@ def upload_image():
     if not request.files:
         return jsonify({"error": "No file uploaded"}), 400
 
-    img = next(iter(request.files.values()))
-    img_bytes = img.read()
-    img_b64 = base64.b64encode(img_bytes).decode()
-
-    ext = os.path.splitext(img.filename or "")[1].lower()
-    mime = {".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png",
-            ".gif": "image/gif", ".webp": "image/webp"}.get(ext, "image/jpeg")
+    img      = next(iter(request.files.values()))
+    img_b64  = base64.b64encode(img.read()).decode()
+    ext      = os.path.splitext(img.filename or "")[1].lower()
+    mime     = {".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png",
+                ".gif": "image/gif",  ".webp": "image/webp"}.get(ext, "image/jpeg")
 
     try:
         resp = client.chat.completions.create(
             model=MODEL,
-            messages=[{
-                "role": "user",
-                "content": [
-                    {"type": "text", "text": (
-                        "Extract all text from this image. "
-                        "Restore diacritics, fix spacing and formatting, "
-                        "and rebuild the document structure without changing meaning."
-                    )},
-                    {"type": "image_url", "image_url": {"url": f"data:{mime};base64,{img_b64}"}},
-                ],
-            }],
+            messages=[{"role": "user", "content": [
+                {"type": "text", "text": (
+                    "Extract all text from this image. "
+                    "Restore diacritics, fix spacing and formatting, "
+                    "and rebuild the document structure without changing meaning."
+                )},
+                {"type": "image_url", "image_url": {"url": f"data:{mime};base64,{img_b64}"}},
+            ]}],
         )
         cleaned_text = resp.choices[0].message.content
     except Exception as e:
         return jsonify({"error": f"GPT vision failed: {e}"}), 500
 
-    count = get_next_number()
-    github_path = f"image{count}_cleaned.txt"
-    gh_status, gh_resp = upload_to_github(cleaned_text, github_path)
+    count      = get_next_number()
+    gh_status, gh_resp = upload_to_github(cleaned_text, f"image{count}_cleaned.txt")
 
-    messages = load_history()
-    if not messages:
-        messages.append({"role": "system", "content": SYSTEM_PROMPT})
-    messages.append({"role": "user", "content": f"[OCR image{count}]\n{cleaned_text}"})
-    save_history(messages)
+    full = load_history()
+    if not full:
+        full.append({"role": "system", "content": SYSTEM_PROMPT})
+    full.append({"role": "user", "content": f"[OCR image{count}]\n{cleaned_text}"})
+    save_history(full)
 
     return jsonify({
         "status": "ok",
