@@ -1,4 +1,5 @@
 import os
+import re
 import base64
 import requests
 from flask import Flask, request, jsonify
@@ -18,6 +19,19 @@ MODEL        = os.getenv("OPENAI_MODEL", "gpt-5.4")
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 REPO         = os.getenv("GITHUB_REPO", "LFanticing72/helf")
 BRANCH       = os.getenv("GITHUB_BRANCH", "main")
+
+def strip_comments(text: str) -> str:
+    # Remove Python # comments
+    text = re.sub(r'(?m)^\s*#.*\n?', '', text)
+    text = re.sub(r'\s+#[^\'\"]+$', '', text, flags=re.MULTILINE)
+    # Remove docstrings
+    text = re.sub(r'(\"\"\"[\s\S]*?\"\"\"|\'\'\'[\s\S]*?\'\'\')', '', text)
+    # Remove lines like "Here is...", "This function...", "Note:" etc.
+    text = re.sub(r'(?mi)^(here is|this (code|function|script|snippet)|note:|explanation:|output:).*\n?', '', text)
+    # Strip markdown code fences
+    text = re.sub(r'```\w*\n?', '', text)
+    return text.strip()
+
 
 SYSTEM_PROMPT = (
     "You are a coding assistant. "
@@ -89,7 +103,7 @@ def chat():
     prompt_with_reminder = prompt + "\n\n[No comments in code. No explanatory text. Raw code only.]"
     to_send  = api_messages(full) + [{"role": "user", "content": prompt_with_reminder}]
     response = client.chat.completions.create(model=MODEL, messages=to_send)
-    reply    = response.choices[0].message.content
+    reply    = strip_comments(response.choices[0].message.content)
 
     full.append({"role": "user",      "content": prompt})
     full.append({"role": "assistant", "content": reply})
