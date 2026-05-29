@@ -103,7 +103,9 @@ def chat():
     prompt_with_reminder = prompt + "\n\n[No comments in code. No explanatory text. Raw code only.]"
     to_send  = api_messages(full) + [{"role": "user", "content": prompt_with_reminder}]
     response = client.chat.completions.create(model=MODEL, messages=to_send)
-    reply    = strip_comments(response.choices[0].message.content)
+    raw_reply = response.choices[0].message.content
+    wants_comments = any(w in prompt.lower() for w in ["komentár", "komentare", "comment", "vysvetli", "explain", "#"])
+    reply = raw_reply if wants_comments else strip_comments(raw_reply)
 
     full.append({"role": "user",      "content": prompt})
     full.append({"role": "assistant", "content": reply})
